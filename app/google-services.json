@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "949888193200",
+    "project_id": "firecomm-8c7f5",
+    "storage_bucket": "firecomm-8c7f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949888193200:android:b71dbd5f1695164948a175",
+        "android_client_info": {
+          "package_name": "com.meerkat.firecomm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "949888193200-cucupshmt321n9a6rv41kkkbt3gn2gd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3DaR5LG27aiPJxNSCm70E1YNlS4LiaIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "949888193200-cucupshmt321n9a6rv41kkkbt3gn2gd3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
