@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                    Log.i(TAG, id);
                    if (token.equals("")){
                        token = FirebaseMessaging.getInstance().getToken().toString();
+                       token = token.substring(29);
                    }
                    Log.i(TAG, token);
 
