@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.Vector;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothLeScanner mBluetoothLeScanner;
     BluetoothLeAdvertiser mBluetoothLeAdvertiser;
     private static final int PERMISSIONS = 100;
-    Vector<Beacon> beacon;
+    Vector<Beacon> beacon = new Vector<Beacon>();
     BeaconAdapter beaconAdapter;
     ListView beaconListView;
     ScanSettings.Builder mScanSettings;
@@ -62,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
     // Firebase code
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("token");
-    final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
-    Button btn = (Button) findViewById(R.id.clickButton) ;
+    //final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
+    //Button btn = (Button) findViewById(R.id.clickButton) ;
     DAOToken dao = new DAOToken();
 
     @Override
@@ -122,9 +124,15 @@ public class MainActivity extends AppCompatActivity {
             super.onScanResult(callbackType, result);
             try {
                 ScanRecord scanRecord = result.getScanRecord();
+                String uuids = UUID.nameUUIDFromBytes(scanRecord.getBytes()).toString();
                 Log.d("getTxPowerLevel()", scanRecord.getTxPowerLevel() + "");
-                Log.d("onScanResult()", result.getDevice().getAddress() + "\n" + result.getRssi() + "\n" + result.getDevice().getName()
-                        + "\n" + result.getDevice().getBondState() + "\n" + result.getDevice().getType());
+                Log.d("onScanResult()\n",
+                        result.getDevice().getAddress() + "\n" +
+                                result.getRssi() + "\n" +
+                                result.getDevice().getName() + "\n" +
+                                uuids + "\n" +
+                                result.getDevice().getBondState() + "\n" +
+                                result.getDevice().getType());
 
                 final ScanResult scanResult = result;
                 new Thread(new Runnable() {
@@ -139,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                                 beaconAdapter.notifyDataSetChanged();
 
                                 // write a message to the database
-                                myRef.setValue(scanResult);
+                                //myRef.setValue(scanResult);
                             }
                         });
                     }
