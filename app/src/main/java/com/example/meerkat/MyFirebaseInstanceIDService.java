@@ -1,5 +1,7 @@
 package com.example.meerkat;
 
+public class MyFirebaseInstanceIDService {
+
 //import android.util.Log;
 //
 //import com.google.firebase.iid.FirebaseInstanceId;
@@ -48,3 +50,5 @@ package com.example.meerkat;
 //
 //    }
 //}
+
+}
