@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -18,6 +20,8 @@ import androidx.core.app.NotificationCompat;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("token");
 
     // START receive_message
     @Override
@@ -45,19 +49,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
-//    // 토큰 생성 모니터링 : 새 토큰이 생성될때마다 onNewToken 콜백이 호출됨
-//    @Override
-//    public void onNewToken(String token) {
-//        Log.d(TAG, "Refreshed token: " + token);
-//
-//        // If you want to send messages to this application instance or
-//        // manage this apps subscriptions on the server side, send the
-//        // FCM registration token to your app server.
-//        sendRegistrationToServer(token);
-//    }
-//    private void sendRegistrationToServer(String token) {
-//        // TODO: Implement this method to send token to your app server.
-//    }
+    // 토큰 생성 모니터링 : 새 토큰이 생성될때마다 onNewToken 콜백이 호출됨
+    @Override
+    public void onNewToken(String token) {
+        Log.d(TAG, "Refreshed token: " + token);
 
-
+        // If you want to send messages to this application instance or
+        // manage this apps subscriptions on the server side, send the
+        // FCM registration token to your app server.
+        sendRegistrationToServer(token);
+    }
+    private void sendRegistrationToServer(String token) {
+        myRef.setValue(token);
+    }
 }

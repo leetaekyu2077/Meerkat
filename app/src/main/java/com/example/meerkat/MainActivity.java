@@ -7,47 +7,34 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.Vector;
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.BluetoothLeAdvertiser;
-import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.ListView;
 
-import java.text.SimpleDateFormat;
+import androidx.core.app.ActivityCompat;
+
+import android.widget.Toast;
+
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
@@ -62,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-mm-dd HH:mm:ss", Locale.KOREAN);
 
     static final String TAG = "MainActivity";
-    String token = "";
+    Task<String> token = null;
 
     // Firebase code
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -120,53 +107,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }) ;
     }
-    ScanCallback mScanCallback = new ScanCallback() {
+
+    final ScanCallback mScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             try {
                 ScanRecord scanRecord = result.getScanRecord();
                 String id = result.getDevice().getAddress();
-                String name = result.getDevice().getName();
-                if (id.equals("B8:27:EB:FB:AE:A8") && name.equals("raspberryp")) {
-                   String time = simpleDateFormat.format(new Date());
-                   Log.i(TAG, "Detected");
-                   Log.i(TAG, time);
-                   Log.i(TAG, id);
-                   if (token.equals("")){
-                       token = FirebaseMessaging.getInstance().getToken().toString();
-                       token = token.substring(29);
-                   }
-                   Log.i(TAG, token);
-
-                   myRef.setValue(token);
-
+                //String name = result.getDevice().getName();
+                if (id.equals("B8:27:EB:FB:AE:A8")) {
+                    String time = simpleDateFormat.format(new Date());
+                    Log.i(TAG, "Detected");
+                    Log.i(TAG, time);
+                    Log.i(TAG, id);
+                    //Task<String> token = FirebaseMessaging.getInstance().getToken();
+                    if (token == null) {
+                        //token = FirebaseMessaging.getInstance().getToken();
+                        token = FirebaseMessaging.getInstance().getToken();
+                        Thread.sleep(100);
+                        myRef.setValue(token.getResult());
+                        //Log.i(TAG, String.valueOf(token));
+                    }
                 }
-
-//                final ScanResult scanResult = result;
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                beacon.add(0, new Beacon(scanResult.getDevice().getAddress(), scanResult.getRssi(), simpleDateFormat.format(new Date())));
-//                                beaconAdapter = new BeaconAdapter(beacon, getLayoutInflater());
-//                                beaconListView.setAdapter(beaconAdapter);
-//                                beaconAdapter.notifyDataSetChanged();
-//
-//                                // write a message to the database
-//                                //myRef.setValue(scanResult);
-//                            }
-//                        });
-//                    }
-//                }).start();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
             //인식 주기
             try {
                 Thread.sleep(1000);
