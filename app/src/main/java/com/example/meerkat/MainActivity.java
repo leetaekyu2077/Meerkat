@@ -59,7 +59,10 @@ public class MainActivity extends AppCompatActivity {
     ListView beaconListView;
     ScanSettings.Builder mScanSettings;
     List<ScanFilter> scanFilters;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.KOREAN);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-mm-dd HH:mm:ss", Locale.KOREAN);
+
+    static final String TAG = "MainActivity";
+    String token = "";
 
     // Firebase code
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -84,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
         //beacon = new Vector<>();
         mBluetoothLeScanner.startScan(mScanCallback);
 
-//        // Firebase code
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("token");
-//        // Read from the database
-//        String TAG = "~warning~";
+        // Firebase code
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("token");
+        // Read from the database
+        String TAG = "~warning~";
 //        myRef.addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,60 +106,72 @@ public class MainActivity extends AppCompatActivity {
 //                Log.w(TAG, "Failed to read value.", error.toException());
 //            }
 //        });
-//        // now: click button -> write token in database
-//        // must modify: detect beacon signal -> write token in database
-//        final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
-//        Button btn = (Button) findViewById(R.id.clickButton) ;
-//        DAOToken dao = new DAOToken();
-//        btn.setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                // Write a message to the database
-//                myRef.setValue("T13579");
-//            }
-//        }) ;
-    }
+        // now: click button -> write token in database
+        // must modify: detect beacon signal -> write token in database
+        final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
+        Button btn = (Button) findViewById(R.id.clickButton) ;
+        DAOToken dao = new DAOToken();
+        btn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                // Write a message to the database
+                myRef.setValue("T13579");
+            }
+        }) ;
+    }
     ScanCallback mScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             try {
                 ScanRecord scanRecord = result.getScanRecord();
-                String uuids = UUID.nameUUIDFromBytes(scanRecord.getBytes()).toString();
-                Log.d("getTxPowerLevel()", scanRecord.getTxPowerLevel() + "");
-                Log.d("onScanResult()\n",
-                        result.getDevice().getAddress() + "\n" +
-                                result.getRssi() + "\n" +
-                                result.getDevice().getName() + "\n" +
-                                uuids + "\n" +
-                                result.getDevice().getBondState() + "\n" +
-                                result.getDevice().getType());
+                String id = result.getDevice().getAddress();
+                String name = result.getDevice().getName();
+                if (id.equals("B8:27:EB:FB:AE:A8") && name.equals("raspberryp")) {
+                   String time = simpleDateFormat.format(new Date());
+                   Log.i(TAG, "Detected");
+                   Log.i(TAG, time);
+                   Log.i(TAG, id);
+                   if (token.equals("")){
+                       token = FirebaseMessaging.getInstance().getToken().toString();
+                   }
+                   Log.i(TAG, token);
 
-                final ScanResult scanResult = result;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                beacon.add(0, new Beacon(scanResult.getDevice().getAddress(), scanResult.getRssi(), simpleDateFormat.format(new Date())));
-                                beaconAdapter = new BeaconAdapter(beacon, getLayoutInflater());
-                                beaconListView.setAdapter(beaconAdapter);
-                                beaconAdapter.notifyDataSetChanged();
+                   myRef.setValue(token);
 
-                                // write a message to the database
-                                //myRef.setValue(scanResult);
-                            }
-                        });
-                    }
-                }).start();
+                }
+
+//                final ScanResult scanResult = result;
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                beacon.add(0, new Beacon(scanResult.getDevice().getAddress(), scanResult.getRssi(), simpleDateFormat.format(new Date())));
+//                                beaconAdapter = new BeaconAdapter(beacon, getLayoutInflater());
+//                                beaconListView.setAdapter(beaconAdapter);
+//                                beaconAdapter.notifyDataSetChanged();
+//
+//                                // write a message to the database
+//                                //myRef.setValue(scanResult);
+//                            }
+//                        });
+//                    }
+//                }).start();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+
+            //인식 주기
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
