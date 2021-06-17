@@ -7,6 +7,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -41,11 +43,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothLeScanner mBluetoothLeScanner;
     BluetoothLeAdvertiser mBluetoothLeAdvertiser;
     private static final int PERMISSIONS = 100;
-    Vector<Beacon> beacon = new Vector<Beacon>();
-    BeaconAdapter beaconAdapter;
     ListView beaconListView;
-    ScanSettings.Builder mScanSettings;
-    List<ScanFilter> scanFilters;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-mm-dd HH:mm:ss", Locale.KOREAN);
 
     static final String TAG = "MainActivity";
@@ -56,13 +54,19 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference myRef = database.getReference("token");
     //final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
     //Button btn = (Button) findViewById(R.id.clickButton) ;
-    DAOToken dao = new DAOToken();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+        if(intent != null){
+            String notificationData = intent.getStringExtra("test");
+            if (notificationData != null){
+                Log.d("FCM_TEST", notificationData);
+            }
+        }
         // Beacon
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
@@ -95,17 +99,6 @@ public class MainActivity extends AppCompatActivity {
 //        });
         // now: click button -> write token in database
         // must modify: detect beacon signal -> write token in database
-        final TextView textView1 = (TextView) findViewById(R.id.helloWorld);
-        Button btn = (Button) findViewById(R.id.clickButton) ;
-        DAOToken dao = new DAOToken();
-        btn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // Write a message to the database
-                myRef.setValue("T13579");
-            }
-        }) ;
     }
 
     final ScanCallback mScanCallback = new ScanCallback() {
@@ -115,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 ScanRecord scanRecord = result.getScanRecord();
                 String id = result.getDevice().getAddress();
+                Task<DataSnapshot> prior_token = myRef.get();
                 //String name = result.getDevice().getName();
                 if (id.equals("B8:27:EB:FB:AE:A8")) {
                     String time = simpleDateFormat.format(new Date());
@@ -122,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, time);
                     Log.i(TAG, id);
                     //Task<String> token = FirebaseMessaging.getInstance().getToken();
+
                     if (token == null) {
                         //token = FirebaseMessaging.getInstance().getToken();
                         token = FirebaseMessaging.getInstance().getToken();
