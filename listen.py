@@ -7,9 +7,9 @@ import datetime
 
 if __name__ == '__main__':
 	#파이어베이스 연결
-	firebase = firebase.FirebaseApplication("https://meerkatfb-1cf49-default-rtdb.firebaseio.com/", None)
+	firebase = firebase.FirebaseApplication("", None)
 	#FCM 서비스 연결
-	APIKEY = "AAAA-P1-STw:APA91bHufehW4N_pKG0fTkwhS2GJWWkpkGqwVBHN_JZJLn2Mf4p9nwqwrKyhvFnCz-oqko0wOpRII_FEga-1ha-1YHKAr9lOx6G5kvSq8oVj8lrLfW4VRFNemGqtckg-x5frj9tj_LCE"
+	APIKEY = ""
 	push_service = FCMNotification(APIKEY)
 	#테스트용 기기 토큰
 	mToken = ""
