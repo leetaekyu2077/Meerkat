@@ -6,5 +6,5 @@ Meerkat
 
 >  - ACK 2021 학술논문대회 동상
 >  - KTCCS 우수논문 선정
->  - KTCCS 11권 7호 게재 [게재 사이트 링크](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002863287)
+>  - KTCCS 11권 7호 게재 [페이지 링크](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002863287)
       
